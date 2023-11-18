@@ -35,7 +35,9 @@ def check_anomaly_hiding(transactions, address, time_difference):
                         
 
     if not anomaly_addresses:
-        return 'Аномалий нету'
+        return {
+            'evaluation': 0
+        }
     else:
         return {
             'anomaly_addresses': anomaly_addresses,

@@ -79,7 +79,9 @@ def check_transfers(transactions, difference_time, address):
 
 
     if not anomaly_list:
-        return 'Аномалий нету'
+        return {
+            'evaluation': 0
+        }
     else:
         return {
             'anomaly_list': anomaly_list,

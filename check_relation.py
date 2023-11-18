@@ -10,7 +10,9 @@ def check_relation(address, api_key):
     response = requests.get(f'https://public.chainalysis.com/api/v1/address/{address}', headers=headers)
 
     if not response.json()['identifications']:
-        return 'Аномалий нету'
+        return {
+            'evaluation': 0
+        }
 
     return {
         'sanction': response.json(),

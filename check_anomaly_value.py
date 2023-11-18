@@ -33,4 +33,6 @@ def check_anomaly_value(transactions, threshold):
         }
         return response
     else:
-        return 'Аномалий нету'
+        return {
+            'evaluation': 0
+        }
