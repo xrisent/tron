@@ -29,7 +29,7 @@ def check_anomaly_value(transactions, threshold):
             'values and z_values': z_values,
             'average_value': average_value,
             'average_deviation': average_deviation,
-            'evaluation': 100 - int((100*threshold)/average_deviation)
+            'evaluation': 100 - (100*threshold)//average_deviation
         }
         return response
     else:

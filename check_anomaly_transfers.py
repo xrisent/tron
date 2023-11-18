@@ -83,5 +83,5 @@ def check_transfers(transactions, difference_time, address):
     else:
         return {
             'anomaly_list': anomaly_list,
-            'evaluation': 100 - int(100*len(anomaly_list)/len(transactions))
+            'evaluation': 100 - (100*len(anomaly_list))//len(transactions)
         }

@@ -20,8 +20,7 @@ transactions = get_transactions(address=address, api_key=api_key, params={'limit
 # В ответ получаем список подозрительных транзакций как from, так и to, то есть и отправленные, и полученные
 
 # Необходимо указать какой кошелек мы проверяем, пороговое значение для суммы трансфера и разницу во времени между трансферами
-anomaly_hiding = check_anomaly_hiding(transactions=transactions, address=address, value=300, time_difference=1000)
-print(anomaly_hiding)
+# anomaly_hiding = check_anomaly_hiding(transactions=transactions, address=address, time_difference=1000)
 # В ответ получаем конечный адрес, который и прислал деньги через левые адреса, а также количество этих адресов
 
 
