@@ -43,6 +43,6 @@ def check_anomaly_hiding(transactions, address, time_difference):
     else:
         return {
             'anomaly_addresses': anomaly_addresses,
-            'evaluation': 100 - (100*len(anomaly_addresses))//len(transactions)
+            'evaluation': (100*len(anomaly_addresses))//len(transactions)
         }
 

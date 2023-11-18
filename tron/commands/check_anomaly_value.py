@@ -30,7 +30,7 @@ def check_anomaly_value(transactions, minimum_threshold, maximum_threshold):
         }
     else:
         return {
-            'evaluation': 100 - (count*100)//len(value),
+            'evaluation': (count*100)//len(values),
             'values and z_values': z_values,
             'average_value': average_value,
             'average_deviation': average_deviation
