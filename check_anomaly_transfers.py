@@ -4,8 +4,7 @@ def check_transfers(transactions, difference_time, address):
 
     from_list = []
     to_list = []
-    anomaly_list_from = []
-    anomaly_list_to = []
+    anomaly_list = []
 
     for transaction in transactions:
         if transaction['from'] != address:
@@ -35,7 +34,7 @@ def check_transfers(transactions, difference_time, address):
         if transaction_to_check_from['from_address'] is not None and transaction_to_check_from['transaction_id'] != transaction['transaction_id']:
             difference = (datetime.strptime(transaction_to_check_from['time'], "%Y-%m-%d %H:%M:%S")  - datetime.strptime(transaction['time'], "%Y-%m-%d %H:%M:%S")).total_seconds()
             if difference <= difference_time:
-                anomaly_list_from.append({
+                anomaly_list.append({
                     'transaction_1': transaction_to_check_from,
                     'transaction_2': transaction
                 })
@@ -63,7 +62,7 @@ def check_transfers(transactions, difference_time, address):
         if transaction_to_check_to['to_address'] is not None and transaction_to_check_to['transaction_id'] != transaction['transaction_id']:
             difference = (datetime.strptime(transaction_to_check_to['time'], "%Y-%m-%d %H:%M:%S")  - datetime.strptime(transaction['time'], "%Y-%m-%d %H:%M:%S")).total_seconds()
             if difference <= difference_time:
-                anomaly_list_to.append({
+                anomaly_list.append({
                     'transaction_1': transaction_to_check_to,
                     'transaction_2': transaction
                 })
@@ -79,11 +78,10 @@ def check_transfers(transactions, difference_time, address):
             transaction_to_check_to['value'] = transaction['value']
 
 
-    if not anomaly_list_from and not anomaly_list_to:
+    if not anomaly_list:
         return 'Аномалий нету'
-    elif not anomaly_list_from:
-        return anomaly_list_to
-    elif not anomaly_list_to:
-        return anomaly_list_from
     else:
-        return anomaly_list_from, anomaly_list_to
+        return {
+            'anomaly_list': anomaly_list,
+            'evaluation': 100 - int(100*len(anomaly_list)/len(transactions))
+        }

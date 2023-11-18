@@ -6,12 +6,11 @@ def check_anomaly_value(transactions, threshold):
     values = []
     z_values = []
     for_average_deviation = []
-    anomaly_list = []
     
     for transaction in transactions:
-        values.append(int(transaction['value']))
+        values.append(int(transaction['value'])/1000000)
 
-    average_value = sum(values)/len(values)
+    average_value = round(sum(values)/len(values), 2)
     
     for value in values:
         for_average_deviation.append((value-average_value)**2)
@@ -21,26 +20,17 @@ def check_anomaly_value(transactions, threshold):
         })
 
     if len(values) > 30:
-        average_deviation = math.sqrt(sum(for_average_deviation)/(len(values)-1))
+        average_deviation = round(math.sqrt(sum(for_average_deviation)/(len(values)-1)), 2)
     else:
-        average_deviation = math.sqrt(sum(for_average_deviation)/len(values))
+        average_deviation = round(math.sqrt(sum(for_average_deviation)/len(values)), 2)
 
     if average_deviation > threshold:
         response = {
             'values and z_values': z_values,
             'average_value': average_value,
             'average_deviation': average_deviation,
-            'evaluation': average_deviation - threshold 
+            'evaluation': 100 - int((100*threshold)/average_deviation)
         }
-        anomaly_list.append(response)
+        return response
     else:
-        response = {
-            'values and z_values': z_values,
-            'average_value': average_value,
-            'average_deviation': average_deviation,
-        }
-
-    if not anomaly_list:
         return 'Аномалий нету'
-    else:
-        return anomaly_list
