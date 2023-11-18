@@ -1,40 +1,37 @@
-import math
+import numpy
 
 
-def check_anomaly_value(transactions, threshold):
-
-    threshold = int(threshold)
+def check_anomaly_value(transactions, minimum_threshold, maximum_threshold):
 
     values = []
     z_values = []
-    for_average_deviation = []
+    count = 0
     
     for transaction in transactions:
         values.append(int(transaction['value'])/1000000)
 
-    average_value = round(sum(values)/len(values), 2)
-    
+    average_value = numpy.mean(values)
+
+    average_deviation = numpy.std(values)
+
     for value in values:
-        for_average_deviation.append((value-average_value)**2)
         z_values.append({
             'value': value,
-            'z_value': value - average_value
+            'z_value': round((value-average_value)/average_deviation, 2)
         })
 
-    if len(values) > 30:
-        average_deviation = round(math.sqrt(sum(for_average_deviation)/(len(values)-1)), 2)
-    else:
-        average_deviation = round(math.sqrt(sum(for_average_deviation)/len(values)), 2)
-
-    if average_deviation > threshold:
-        response = {
-            'values and z_values': z_values,
-            'average_value': average_value,
-            'average_deviation': average_deviation,
-            'evaluation': 100 - (100*int(threshold))//average_deviation
-        }
-        return response
-    else:
+    for z_value in z_values:
+        if z_value['z_value'] >= maximum_threshold or z_value['z_value'] <= minimum_threshold:
+            count +=1
+    
+    if count == 0:
         return {
             'evaluation': 0
+        }
+    else:
+        return {
+            'evaluation': 100 - (count*100)//len(value),
+            'values and z_values': z_values,
+            'average_value': average_value,
+            'average_deviation': average_deviation
         }

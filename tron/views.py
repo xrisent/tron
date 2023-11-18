@@ -24,17 +24,22 @@ def start_research(request):
         serializer = StartResearchSerializer(data=request.data)
         if serializer.is_valid():
             address = serializer.validated_data['address']
-            threshold = serializer.validated_data['threshold']
+            minimum_threshold = serializer.validated_data['minimum_threshold']
+            maximum_threshold = serializer.validated_data['maximum_threshold']
             time_difference = serializer.validated_data['time_difference']
+            value_coefficient = serializer.validated_data['value_coefficient']
+            transfers_coefficient = serializer.validated_data['transfers_coefficient']
+            hiding_coefficient = serializer.validated_data['hiding_coefficient']
+            relation_coefficient = serializer.validated_data['relation_coefficient']
 
             transactions = get_transactions(address=address, api_key=api_key, params={'limit': 20})
 
-            anomaly_value = check_anomaly_value(transactions=transactions, threshold=threshold)
+            anomaly_value = check_anomaly_value(transactions=transactions, minimum_threshold=minimum_threshold, maximum_threshold=maximum_threshold)
             anomaly_transfers = check_anomaly_transfers(transactions=transactions, difference_time=time_difference, address=address)
             anomaly_hiding = check_anomaly_hiding(transactions=transactions, address=address, time_difference=time_difference)
             anomaly_relation = check_relation(address=address, api_key=api_key_chainalysis)
 
-            final_evaluation = get_final_evaluation(anomaly_value, anomaly_transfers, anomaly_hiding, anomaly_relation, value_coefficient=0.4, transfers_coefficient=0.3, hiding_coefficient=0.5, relation_coefficient=0.6)
+            final_evaluation = get_final_evaluation(anomaly_value, anomaly_transfers, anomaly_hiding, anomaly_relation, value_coefficient=value_coefficient, transfers_coefficient=transfers_coefficient, hiding_coefficient=hiding_coefficient, relation_coefficient=relation_coefficient)
 
             return JsonResponse({'evaluation': final_evaluation})
 

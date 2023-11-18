@@ -11,7 +11,13 @@ def get_final_evaluation(anomaly_value, anomaly_transfers, anomaly_hiding, anoma
 
     coefficient_general = value_coefficient+transfers_coefficient+hiding_coefficient+relation_coefficient
 
-    final_evaluation = round(anomalies_general/coefficient_general, 2)
+    final_evaluation = {
+        'final_evaluation': round(anomalies_general/coefficient_general, 2),
+        'anomaly_values': anomaly_value,
+        'anomaly_tranfers': anomaly_transfers,
+        'anomaly_hidings': anomaly_hiding,
+        'anomaly_relation': anomaly_relation, 
+        }
 
     return final_evaluation
 
