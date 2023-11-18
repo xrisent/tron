@@ -1,8 +1,10 @@
-from get_transactions import get_transactions
-from check_anomaly_transfers import check_transfers
+from .get_transactions import get_transactions
+from .check_anomaly_transfers import check_anomaly_transfers
 from datetime import datetime
 
 def check_anomaly_hiding(transactions, address, time_difference):
+
+    time_difference = int(time_difference)
 
     anomaly_addresses = []
     

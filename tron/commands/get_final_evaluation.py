@@ -1,6 +1,6 @@
 
 
-def get_evaluation(anomaly_value, anomaly_transfers, anomaly_hiding, anomaly_relation, value_coefficient, transfers_coefficient, hiding_coefficient, relation_coefficient):
+def get_final_evaluation(anomaly_value, anomaly_transfers, anomaly_hiding, anomaly_relation, value_coefficient, transfers_coefficient, hiding_coefficient, relation_coefficient):
 
     anomaly_value_evaluation = anomaly_value['evaluation']
     anomaly_transfers_evaluation = anomaly_transfers['evaluation']

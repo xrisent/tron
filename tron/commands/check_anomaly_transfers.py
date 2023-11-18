@@ -1,6 +1,8 @@
 from datetime import datetime
 
-def check_transfers(transactions, difference_time, address):
+def check_anomaly_transfers(transactions, difference_time, address):
+
+    difference_time = int(difference_time)
 
     from_list = []
     to_list = []

@@ -3,6 +3,8 @@ import math
 
 def check_anomaly_value(transactions, threshold):
 
+    threshold = int(threshold)
+
     values = []
     z_values = []
     for_average_deviation = []
@@ -29,7 +31,7 @@ def check_anomaly_value(transactions, threshold):
             'values and z_values': z_values,
             'average_value': average_value,
             'average_deviation': average_deviation,
-            'evaluation': 100 - (100*threshold)//average_deviation
+            'evaluation': 100 - (100*int(threshold))//average_deviation
         }
         return response
     else:
