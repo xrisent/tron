@@ -18,7 +18,6 @@ from .commands.get_account_balance import get_balance
 api_key = config('API_TRONGRID_KEY')
 api_key_chainalysis = config('CHAINALYSIS_API_KEY')
 
-
 @swagger_auto_schema(
     methods=['post'],
     request_body=openapi.Schema(
