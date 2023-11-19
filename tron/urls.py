@@ -3,5 +3,5 @@ from .views import start_research
 
 
 urlpatterns = [
-    path('check_address/', start_research, name='check_address')
+    path('check_address/<str:address>/', start_research, name='check_address')
 ]

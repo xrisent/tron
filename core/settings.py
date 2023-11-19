@@ -141,3 +141,13 @@ CORS_ALLOWED_ORIGINS = [
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True
+
+TRON_SETTINGS = {
+    'minimum_threshold': -2,
+    'maximum_threshold': 3,
+    'time_difference': 150,
+    'transfers_coefficient': 0.3,
+    'value_coefficient': 0.4,
+    'hiding_coefficient': 0.5,
+    'relation_coefficient': 0.6
+}
