@@ -2,7 +2,7 @@ from .get_transactions import get_transactions
 from .check_anomaly_transfers import check_anomaly_transfers
 from datetime import datetime
 
-def check_anomaly_hiding(transactions, address, time_difference):
+def check_anomaly_hiding(transactions, address, time_difference, api_key):
 
     time_difference = int(time_difference)
 
@@ -17,7 +17,7 @@ def check_anomaly_hiding(transactions, address, time_difference):
             connections = 1
 
             while not anomaly_address:
-                transactions_1 = get_transactions(new_address, api_key='f792f335-3a37-443d-8444-e365a775ffe1', params={'limit': 10})
+                transactions_1 = get_transactions(new_address, api_key=api_key, params={'limit': 10})
 
                 for transaction_1 in transactions_1:
                     difference = (datetime.strptime(transaction_1['time'], "%Y-%m-%d %H:%M:%S")  - datetime.strptime(new_time, "%Y-%m-%d %H:%M:%S")).total_seconds()

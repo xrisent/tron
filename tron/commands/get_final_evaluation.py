@@ -1,6 +1,6 @@
 
 
-def get_final_evaluation(anomaly_value, anomaly_transfers, anomaly_hiding, anomaly_relation, value_coefficient, transfers_coefficient, hiding_coefficient, relation_coefficient):
+def get_final_evaluation(anomaly_value, anomaly_transfers, anomaly_hiding, anomaly_relation, value_coefficient, transfers_coefficient, hiding_coefficient, relation_coefficient, transactions_len, balance):
 
     anomaly_value_evaluation = anomaly_value['evaluation']
     anomaly_transfers_evaluation = anomaly_transfers['evaluation']
@@ -11,12 +11,20 @@ def get_final_evaluation(anomaly_value, anomaly_transfers, anomaly_hiding, anoma
 
     coefficient_general = value_coefficient+transfers_coefficient+hiding_coefficient+relation_coefficient
 
-    final_evaluation = {
-        'final_evaluation': round(anomalies_general/coefficient_general, 2),
-        'anomaly_values': anomaly_value,
-        'anomaly_tranfers': anomaly_transfers,
-        'anomaly_hidings': anomaly_hiding,
-        'anomaly_relation': anomaly_relation, 
+    if anomaly_relation_evaluation == 100:
+
+        final_evaluation = {
+            'final_evaluation': round(anomalies_general/coefficient_general, 2),
+            'transactions': transactions_len,
+            'blacklist': True,
+            'balance': balance
+        }
+    else:
+        final_evaluation = {
+            'final_evaluation': round(anomalies_general/coefficient_general, 2),
+            'transactions': transactions_len,
+            'blacklist': False,
+            'balance': balance
         }
 
     return final_evaluation

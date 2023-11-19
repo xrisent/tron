@@ -22,7 +22,7 @@ def get_transactions(address, api_key, params={}):
             'to': transaction['to'],
             'value': transaction['value'],
             'timestamp': transaction['block_timestamp'],
-            'time': '%s'%time
+            'time': '%s'%time,
         })
     
     return data
