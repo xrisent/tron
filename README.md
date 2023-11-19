@@ -13,6 +13,7 @@ CHAINALYSIS_API_KEY="your_chainanalysis_api_key"
 ```
 
 #### Пример:
+```
 {
     "address": "TFUBVyRg35WHnjkNFPG7hrzZ8zwcUAR1u1",
     "minimum_threshold": -2,
@@ -23,7 +24,7 @@ CHAINALYSIS_API_KEY="your_chainanalysis_api_key"
     "hiding_coefficient": 0.5,
     "relation_coefficient": 0.6
 }
-
+```
 
 ## Сбор данных о транзакций:
 Сбор данных осуществлялся через API ключ уже отфильтрованных по TRC20 типу
