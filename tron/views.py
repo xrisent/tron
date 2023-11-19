@@ -13,8 +13,8 @@ from .commands.get_final_evaluation import get_final_evaluation
 from .commands.get_transactions import get_transactions
 
 
-api_key = config('api_key')
-api_key_chainalysis = config('api_key_chainalysis')
+api_key = config('API_TRONGRID_KEY')
+api_key_chainalysis = config('CHAINALYSIS_API_KEY')
 
 @csrf_exempt
 @api_view(['POST'])
