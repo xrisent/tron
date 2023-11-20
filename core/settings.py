@@ -26,7 +26,7 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['akma-aml.azurewebsites.net',]
+ALLOWED_HOSTS = ['akma-aml.azurewebsites.net', '127.0.0.1']
 
 
 # Application definition
@@ -156,5 +156,5 @@ TRON_SETTINGS = {
     }
 }
 
-APPROXIMATE_MAX_TRANSACTIONS_AMOUNT = 500
+APPROXIMATE_MAX_TRANSACTIONS_AMOUNT = 400
 
