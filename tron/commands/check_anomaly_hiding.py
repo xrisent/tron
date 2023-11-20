@@ -7,7 +7,7 @@ def check_anomaly_hiding(transactions, address, time_difference, api_key):
     time_difference = int(time_difference)
 
     anomaly_addresses = []
-    
+
     for transaction in transactions:
         if transaction['from'] != address:
             anomaly_address = None
@@ -17,7 +17,7 @@ def check_anomaly_hiding(transactions, address, time_difference, api_key):
             connections = 1
 
             while not anomaly_address:
-                transactions_1 = get_transactions(new_address, api_key=api_key, params={'limit': 10})
+                transactions_1 = get_transactions(new_address, api_key=api_key, params={'min_timestamp': transaction['timestamp']-20, 'max_timestamp': transaction['timestamp']+20})
 
                 for transaction_1 in transactions_1:
                     difference = (datetime.strptime(transaction_1['time'], "%Y-%m-%d %H:%M:%S")  - datetime.strptime(new_time, "%Y-%m-%d %H:%M:%S")).total_seconds()

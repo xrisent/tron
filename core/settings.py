@@ -149,5 +149,9 @@ TRON_SETTINGS = {
     'transfers_coefficient': 0.3,
     'value_coefficient': 0.4,
     'hiding_coefficient': 0.5,
-    'relation_coefficient': 0.6
+    'relation_coefficient': 0.6,
+    'params': {
+        'limit': 200
+    }
 }
+
