@@ -1,5 +1,6 @@
 import requests
 from datetime import datetime
+from core.settings import APPROXIMATE_MAX_TRANSACTIONS_AMOUNT
 
 
 def get_transactions(address, api_key, params={}):
@@ -28,16 +29,19 @@ def get_transactions(address, api_key, params={}):
     
 
     while True:
-        response = requests.get(url, headers=headers, params=params)
-        response_data = response.json()['data']
-
-        format_transactions(response_data)
-
-        fingerprint = response.json()['meta'].get('fingerprint')
-        if fingerprint:
-            params['fingerprint'] = fingerprint
+        if len(data) >= APPROXIMATE_MAX_TRANSACTIONS_AMOUNT:
+             break
         else:
-            break
+            response = requests.get(url, headers=headers, params=params)
+            response_data = response.json()['data']
+
+            format_transactions(response_data)
+
+            fingerprint = response.json()['meta'].get('fingerprint')
+            if fingerprint:
+                params['fingerprint'] = fingerprint
+            else:
+                break
 
     
     return data
