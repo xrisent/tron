@@ -46,7 +46,7 @@ api_key_chainalysis = config('CHAINALYSIS_API_KEY')
 def start_research(request, address):
 
     try:
-        transactions = get_transactions(address=address, api_key=api_key, params={'limit': 20})
+        transactions = get_transactions(address=address, api_key=api_key, params={'limit': 200})
     except:
         return JsonResponse({'error': 'Invalid address'})
     
