@@ -14,7 +14,7 @@ from .commands.check_relation import check_relation
 from .commands.get_finalEvaluation import get_finalEvaluation
 from .commands.get_transactions import get_transactions
 from .commands.get_account_balance import get_balance
-# from .commands.get_transactions_len import get_len
+from .commands.get_transactions_len import get_len
 
 from core.settings import TRON_SETTINGS
 
@@ -57,8 +57,7 @@ def start_research(request, address):
     anomaly_hiding = check_anomaly_hiding(transactions=transactions, address=address, time_difference=TRON_SETTINGS['time_difference'], api_key=api_key)
     anomaly_relation = check_relation(address=address, api_key=api_key_chainalysis)
 
-    finalEvaluation = get_finalEvaluation(anomaly_value, anomaly_transfers, anomaly_hiding, anomaly_relation, value_coefficient=TRON_SETTINGS['value_coefficient'], transfers_coefficient=TRON_SETTINGS['transfers_coefficient'], hiding_coefficient=TRON_SETTINGS['hiding_coefficient'], relation_coefficient=TRON_SETTINGS['relation_coefficient'], transactions_len=len(transactions), balance=balance)
+    finalEvaluation = get_finalEvaluation(anomaly_value, anomaly_transfers, anomaly_hiding, anomaly_relation, value_coefficient=TRON_SETTINGS['value_coefficient'], transfers_coefficient=TRON_SETTINGS['transfers_coefficient'], hiding_coefficient=TRON_SETTINGS['hiding_coefficient'], relation_coefficient=TRON_SETTINGS['relation_coefficient'], transactions_len=get_len(address=address, api_key=api_key), balance=balance)
 
-# transactions_len=get_len(address=address, api_key=api_key)
 
     return JsonResponse({'evaluation': finalEvaluation})
