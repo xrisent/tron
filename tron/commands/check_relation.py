@@ -11,10 +11,10 @@ def check_relation(address, api_key):
 
     if not response.json()['identifications']:
         return {
-            'evaluation': 0
+            'evaluation': False
         }
 
     return {
         'sanction': response.json(),
-        'evaluation': 100
+        'evaluation': True
     }
