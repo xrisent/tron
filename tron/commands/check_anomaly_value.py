@@ -1,7 +1,7 @@
 import numpy
 
 
-def check_anomaly_value(transactions, minimum_threshold, maximum_threshold):
+async def check_anomaly_value(transactions, minimum_threshold, maximum_threshold):
 
     values = []
     z_values = []

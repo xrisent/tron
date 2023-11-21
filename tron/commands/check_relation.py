@@ -1,6 +1,6 @@
 import requests
 
-def check_relation(address, api_key):
+async def check_relation(address, api_key):
 
     headers = {
         'X-API-Key': api_key,

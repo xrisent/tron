@@ -2,7 +2,7 @@ import requests
 
 TRC20_TOKEN = 'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t'
 
-def get_balance(address, api_key):
+async def get_balance(address, api_key):
     url = f"https://api.trongrid.io/v1/accounts/{address}/"
     
     headers = {

@@ -1,6 +1,6 @@
 import requests
 
-def get_len(address, api_key):
+async def get_len(address, api_key):
     url = f"https://api.trongrid.io/v1/accounts/{address}/transactions/trc20"
     
     headers = {

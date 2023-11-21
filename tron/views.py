@@ -6,6 +6,7 @@ from django.http import JsonResponse
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
+from django.views.generic import View
 
 from .commands.check_anomaly_hiding import check_anomaly_hiding
 from .commands.check_anomaly_transfers import check_anomaly_transfers
@@ -15,6 +16,8 @@ from .commands.get_finalEvaluation import get_finalEvaluation
 from .commands.get_transactions import get_transactions
 from .commands.get_account_balance import get_balance
 from .commands.get_transactions_len import get_len
+
+from asgiref.sync import async_to_sync
 
 from core.settings import TRON_SETTINGS
 
@@ -46,18 +49,22 @@ api_key_chainalysis = config('CHAINALYSIS_API_KEY')
 @renderer_classes([JSONRenderer])
 def start_research(request, address):
 
-    try:
-        transactions = get_transactions(address=address, api_key=api_key, params=TRON_SETTINGS['params'])
-    except:
-        return JsonResponse({'error': 'Invalid address'})
-    
-    balance = int(get_balance(address=address, api_key=api_key))/1000000
-    anomaly_value = check_anomaly_value(transactions=transactions, minimum_threshold=TRON_SETTINGS['minimum_threshold'], maximum_threshold=TRON_SETTINGS['maximum_threshold'])
-    anomaly_transfers = check_anomaly_transfers(transactions=transactions, difference_time=TRON_SETTINGS['time_difference'], address=address)
-    anomaly_hiding = check_anomaly_hiding(transactions=transactions, address=address, time_difference=TRON_SETTINGS['time_difference'], api_key=api_key)
-    anomaly_relation = check_relation(address=address, api_key=api_key_chainalysis)
+    @async_to_sync
+    async def inner():
+        try:
+            transactions = get_transactions(address=address, api_key=api_key, params=TRON_SETTINGS['params'])
+        except:
+            return JsonResponse({'error': 'Invalid address'})
+        
+        balance = int(await get_balance(address=address, api_key=api_key))/1000000
+        anomaly_value = await check_anomaly_value(transactions=transactions, minimum_threshold=TRON_SETTINGS['minimum_threshold'], maximum_threshold=TRON_SETTINGS['maximum_threshold'])
+        anomaly_transfers = await check_anomaly_transfers(transactions=transactions, difference_time=TRON_SETTINGS['time_difference'], address=address)
+        anomaly_hiding = await check_anomaly_hiding(transactions=transactions, address=address, time_difference=TRON_SETTINGS['time_difference'], api_key=api_key)
+        anomaly_relation = await check_relation(address=address, api_key=api_key_chainalysis)
 
-    finalEvaluation = get_finalEvaluation(anomaly_value, anomaly_transfers, anomaly_hiding, anomaly_relation, value_coefficient=TRON_SETTINGS['value_coefficient'], transfers_coefficient=TRON_SETTINGS['transfers_coefficient'], hiding_coefficient=TRON_SETTINGS['hiding_coefficient'], relation_coefficient=TRON_SETTINGS['relation_coefficient'], transactions_len=get_len(address=address, api_key=api_key), balance=balance)
+        finalEvaluation = get_finalEvaluation(anomaly_value, anomaly_transfers, anomaly_hiding, anomaly_relation, value_coefficient=TRON_SETTINGS['value_coefficient'], transfers_coefficient=TRON_SETTINGS['transfers_coefficient'], hiding_coefficient=TRON_SETTINGS['hiding_coefficient'], transactions_len=await get_len(address=address, api_key=api_key), balance=balance)
+        
+        return JsonResponse({'evaluation': finalEvaluation})
 
-
-    return JsonResponse({'evaluation': finalEvaluation})
+    response = inner()
+    return response
