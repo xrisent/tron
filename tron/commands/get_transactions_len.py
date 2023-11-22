@@ -15,30 +15,8 @@ async def get_len(address, api_key):
         response = httpx.get(url=url, headers=headers, params=params)
         transactions_len += len(response.json()['data'])
         fingerprint = response.json()['meta'].get('fingerprint')
-        print(transactions_len)
 
         if fingerprint:
             params['fingerprint'] = fingerprint
         else:
-            first_transaction = {
-                'transaction_id': response.json()['data'][0]['transaction_id'],
-                'from': response.json()['data'][0]['from'],
-                'to': response.json()['data'][0]['to'],
-                'value': response.json()['data'][0]['value'],
-                'timestamp': response.json()['data'][0]['block_timestamp'],
-                'time': '%s'%datetime.fromtimestamp(response.json()['data'][0]['block_timestamp']/1000),
-            }
-            length = len(response.json()['data'])
-            last_transaction = {
-                'transaction_id': response.json()['data'][length-1]['transaction_id'],
-                'from': response.json()['data'][length-1]['from'],
-                'to': response.json()['data'][length-1]['to'],
-                'value': response.json()['data'][length-1]['value'],
-                'timestamp': response.json()['data'][length-1]['block_timestamp'],
-                'time': '%s'%datetime.fromtimestamp(response.json()['data'][length-1]['block_timestamp']/1000),
-            }
-            return {
-                'transactions_len': transactions_len, 
-                'first_transaction': first_transaction, 
-                'last_transaction': last_transaction
-                }
+            return transactions_len 
