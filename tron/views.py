@@ -56,11 +56,14 @@ def start_research(request, address):
         except:
             return JsonResponse({'error': 'Invalid address'})
         
-        if len(transactions) <= 10:
+        transactions_info = await get_len(address=address, api_key=api_key)
+        
+        if transactions_info['transactions_len'] <= 10:
             return JsonResponse({'message': 'There are less than 10 transactions'})
         
         balance = int(await get_balance(address=address, api_key=api_key))/1000000
         anomaly_relation = await check_relation(address=address, api_key=api_key_chainalysis)
+
         if anomaly_relation['evaluation'] is True:
             return JsonResponse({'message': 'This address is on sanctions list', 'evaluation': 100})
 
@@ -68,7 +71,7 @@ def start_research(request, address):
         anomaly_transfers = await check_anomaly_transfers(transactions=transactions, difference_time=TRON_SETTINGS['time_difference'], address=address)
         anomaly_hiding = await check_anomaly_hiding(transactions=transactions, address=address, time_difference=TRON_SETTINGS['time_difference'], api_key=api_key)
 
-        finalEvaluation = get_finalEvaluation(anomaly_value, anomaly_transfers, anomaly_hiding, anomaly_relation, value_coefficient=TRON_SETTINGS['value_coefficient'], transfers_coefficient=TRON_SETTINGS['transfers_coefficient'], hiding_coefficient=TRON_SETTINGS['hiding_coefficient'], transactions_len=await get_len(address=address, api_key=api_key), balance=balance)
+        finalEvaluation = get_finalEvaluation(anomaly_value, anomaly_transfers, anomaly_hiding, anomaly_relation, value_coefficient=TRON_SETTINGS['value_coefficient'], transfers_coefficient=TRON_SETTINGS['transfers_coefficient'], hiding_coefficient=TRON_SETTINGS['hiding_coefficient'], transactions_len=transactions_info['transactions_len'], balance=balance, first_transaction = transactions_info['first_transaction'], last_transaction = transactions_info['last_transaction'])
         
         return JsonResponse({'evaluation': finalEvaluation})
 
