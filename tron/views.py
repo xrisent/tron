@@ -37,11 +37,32 @@ api_key_chainalysis = config('CHAINALYSIS_API_KEY')
     responses={
         '200': openapi.Response(
             description='Successful response',
-            content={'application/json': {'example': {'evaluation': 0.85}}},
+            examples={'application/json': {"finalEvaluation": {
+                "finalEvaluation": 0.33,
+                "transactions": 125,
+                "blacklist": 'false',
+                "balance": 530,
+                "first_transaction": "2020-12-12 19:13:18",
+                "last_transaction": "2023-11-05 11:21:06"
+                },
+            "error": 'null',
+            "message": 'null'}},
+        ),
+        '230': openapi.Response(
+            description='Transactions are less than 10',
+            examples={'application/json':{'finalEvaluation': None, 'error': None, 'message': 'On this address less than 10 transactions'}},
+        ),
+        '231': openapi.Response(
+            description='Address is on sanctions list',
+            examples={'application/json':{'finalEvaluation': None, 'error': None, 'message': 'This address is on sanctions list'}},
         ),
         '400': openapi.Response(
             description='Bad request',
-            content={'application/json': {'example': {'error': 'Invalid data'}}},
+            examples={'application/json':{'finalEvaluation': None, 'error': 'Bad Request', 'message': None}},
+        ),
+        '500': openapi.Response(
+            description='Internal server error',
+            examples={'application/json': {'content': {'finalEvaluation': None, 'error': 'Internal server error', 'message': None}}},
         ),
     }
 )
@@ -49,8 +70,8 @@ api_key_chainalysis = config('CHAINALYSIS_API_KEY')
 @api_view(['GET'])
 @renderer_classes([JSONRenderer])
 def start_research(request, address):
+    try:
 
-    if request.method == 'GET':
         @async_to_sync
         async def inner():
             transactions = await get_transactions(address=address, api_key=api_key, params=TRON_SETTINGS['params'])
@@ -58,14 +79,14 @@ def start_research(request, address):
             transactions_len = await get_len(address=address, api_key=api_key)
             
             if transactions_len <= 10:
-                return JsonResponse({'error': None, 'message': 'There are less than 10 transactions', 'finalEvalutaion': None}, status=230)
+                return JsonResponse({'finalEvaluation': None, 'error': None, 'message': 'On this address less than 10 transactions'}, status=230)
             
             transactions_info = await get_first_last_transactions(address=address, api_key=api_key)
             balance = int(await get_balance(address=address, api_key=api_key))/1000000
             anomaly_relation = await check_relation(address=address, api_key=api_key_chainalysis)
 
             if anomaly_relation['evaluation'] is True:
-                return JsonResponse({'error': None, 'message': 'This address is on sanctions list', 'finalEvaluation': None}, status=231)
+                return JsonResponse({'finalEvaluation': None, 'error': None, 'message': 'This address is on sanctions list'}, status=231)
 
             anomaly_value = await check_anomaly_value(transactions=transactions, minimum_threshold=TRON_SETTINGS['minimum_threshold'], maximum_threshold=TRON_SETTINGS['maximum_threshold'])
             anomaly_transfers = await check_anomaly_transfers(transactions=transactions, difference_time=TRON_SETTINGS['time_difference'], address=address)
@@ -73,9 +94,10 @@ def start_research(request, address):
 
             finalEvaluation = get_finalEvaluation(anomaly_value, anomaly_transfers, anomaly_hiding, anomaly_relation, value_coefficient=TRON_SETTINGS['value_coefficient'], transfers_coefficient=TRON_SETTINGS['transfers_coefficient'], hiding_coefficient=TRON_SETTINGS['hiding_coefficient'], transactions_len=transactions_len, balance=balance, first_transaction = transactions_info['first_transaction'], last_transaction = transactions_info['last_transaction'])
             
-            return JsonResponse({'error': None, 'message': None, 'finalEvaluation': finalEvaluation}, status=200)
-    else:
-        return JsonResponse({'error': 'Bad request'})
+            return JsonResponse({'finalEvaluation': finalEvaluation, 'error': None, 'message': None}, status=200)
 
-    response = inner()
-    return response
+        response = inner()
+        return response
+            
+    except Exception as e:
+        return JsonResponse({'finalEvaluation': None, 'error': e, 'message': None}, status=500)
