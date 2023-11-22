@@ -50,32 +50,32 @@ api_key_chainalysis = config('CHAINALYSIS_API_KEY')
 @renderer_classes([JSONRenderer])
 def start_research(request, address):
 
-    @async_to_sync
-    async def inner():
-        try:
+    if request.method == 'GET':
+        @async_to_sync
+        async def inner():
             transactions = await get_transactions(address=address, api_key=api_key, params=TRON_SETTINGS['params'])
-        except:
-            return JsonResponse({'error': 'Invalid address'})
-        
-        transactions_len = await get_len(address=address, api_key=api_key)
-        
-        if transactions_len <= 10:
-            return JsonResponse({'message': 'There are less than 10 transactions'})
-        
-        transactions_info = await get_first_last_transactions(address=address, api_key=api_key)
-        balance = int(await get_balance(address=address, api_key=api_key))/1000000
-        anomaly_relation = await check_relation(address=address, api_key=api_key_chainalysis)
+            
+            transactions_len = await get_len(address=address, api_key=api_key)
+            
+            if transactions_len <= 10:
+                return JsonResponse({'error': None, 'message': 'There are less than 10 transactions', 'finalEvalutaion': None}, status=230)
+            
+            transactions_info = await get_first_last_transactions(address=address, api_key=api_key)
+            balance = int(await get_balance(address=address, api_key=api_key))/1000000
+            anomaly_relation = await check_relation(address=address, api_key=api_key_chainalysis)
 
-        if anomaly_relation['evaluation'] is True:
-            return JsonResponse({'message': 'This address is on sanctions list', 'evaluation': 100})
+            if anomaly_relation['evaluation'] is True:
+                return JsonResponse({'error': None, 'message': 'This address is on sanctions list', 'finalEvaluation': None}, status=231)
 
-        anomaly_value = await check_anomaly_value(transactions=transactions, minimum_threshold=TRON_SETTINGS['minimum_threshold'], maximum_threshold=TRON_SETTINGS['maximum_threshold'])
-        anomaly_transfers = await check_anomaly_transfers(transactions=transactions, difference_time=TRON_SETTINGS['time_difference'], address=address)
-        anomaly_hiding = await check_anomaly_hiding(transactions=transactions, address=address, time_difference=TRON_SETTINGS['time_difference'], api_key=api_key)
+            anomaly_value = await check_anomaly_value(transactions=transactions, minimum_threshold=TRON_SETTINGS['minimum_threshold'], maximum_threshold=TRON_SETTINGS['maximum_threshold'])
+            anomaly_transfers = await check_anomaly_transfers(transactions=transactions, difference_time=TRON_SETTINGS['time_difference'], address=address)
+            anomaly_hiding = await check_anomaly_hiding(transactions=transactions, address=address, time_difference=TRON_SETTINGS['time_difference'], api_key=api_key)
 
-        finalEvaluation = get_finalEvaluation(anomaly_value, anomaly_transfers, anomaly_hiding, anomaly_relation, value_coefficient=TRON_SETTINGS['value_coefficient'], transfers_coefficient=TRON_SETTINGS['transfers_coefficient'], hiding_coefficient=TRON_SETTINGS['hiding_coefficient'], transactions_len=transactions_len, balance=balance, first_transaction = transactions_info['first_transaction'], last_transaction = transactions_info['last_transaction'])
-        
-        return JsonResponse({'evaluation': finalEvaluation})
+            finalEvaluation = get_finalEvaluation(anomaly_value, anomaly_transfers, anomaly_hiding, anomaly_relation, value_coefficient=TRON_SETTINGS['value_coefficient'], transfers_coefficient=TRON_SETTINGS['transfers_coefficient'], hiding_coefficient=TRON_SETTINGS['hiding_coefficient'], transactions_len=transactions_len, balance=balance, first_transaction = transactions_info['first_transaction'], last_transaction = transactions_info['last_transaction'])
+            
+            return JsonResponse({'error': None, 'message': None, 'finalEvaluation': finalEvaluation}, status=200)
+    else:
+        return JsonResponse({'error': 'Bad request'})
 
     response = inner()
     return response

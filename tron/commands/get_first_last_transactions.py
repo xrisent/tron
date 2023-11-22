@@ -14,22 +14,8 @@ async def get_first_last_transactions(address, api_key):
     response_first = httpx.get(url=url, headers=headers, params=params_first)
     response_last = httpx.get(url=url, headers=headers, params=params_last)
 
-    first_transaction = {
-                'transaction_id': response_first.json()['data'][0]['transaction_id'],
-                'from': response_first.json()['data'][0]['from'],
-                'to': response_first.json()['data'][0]['to'],
-                'value': response_first.json()['data'][0]['value'],
-                'timestamp': response_first.json()['data'][0]['block_timestamp'],
-                'time': '%s'%datetime.fromtimestamp(response_first.json()['data'][0]['block_timestamp']/1000),
-            }
-    last_transaction = {
-        'transaction_id': response_last.json()['data'][0]['transaction_id'],
-        'from': response_last.json()['data'][0]['from'],
-        'to': response_last.json()['data'][0]['to'],
-        'value': response_last.json()['data'][0]['value'],
-        'timestamp': response_last.json()['data'][0]['block_timestamp'],
-        'time': '%s'%datetime.fromtimestamp(response_last.json()['data'][0]['block_timestamp']/1000),
-    }
+    first_transaction = '%s'%datetime.fromtimestamp(response_first.json()['data'][0]['block_timestamp']/1000)
+    last_transaction = '%s'%datetime.fromtimestamp(response_last.json()['data'][0]['block_timestamp']/1000)
 
     return {
         'first_transaction': first_transaction,
