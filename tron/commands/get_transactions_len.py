@@ -1,4 +1,4 @@
-import requests
+import httpx
 from datetime import datetime
 
 async def get_len(address, api_key):
@@ -12,7 +12,7 @@ async def get_len(address, api_key):
     transactions_len = 0
 
     while True:
-        response = requests.get(url=url, headers=headers, params=params)
+        response = httpx.get(url=url, headers=headers, params=params)
         transactions_len += len(response.json()['data'])
         fingerprint = response.json()['meta'].get('fingerprint')
 

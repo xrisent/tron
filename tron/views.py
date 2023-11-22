@@ -52,7 +52,7 @@ def start_research(request, address):
     @async_to_sync
     async def inner():
         try:
-            transactions = get_transactions(address=address, api_key=api_key, params=TRON_SETTINGS['params'])
+            transactions = await get_transactions(address=address, api_key=api_key, params=TRON_SETTINGS['params'])
         except:
             return JsonResponse({'error': 'Invalid address'})
         

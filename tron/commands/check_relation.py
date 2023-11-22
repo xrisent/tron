@@ -1,4 +1,4 @@
-import requests
+import httpx
 
 async def check_relation(address, api_key):
 
@@ -7,7 +7,7 @@ async def check_relation(address, api_key):
         'Accept': 'application/json',
     }
 
-    response = requests.get(f'https://public.chainalysis.com/api/v1/address/{address}', headers=headers)
+    response = httpx.get(f'https://public.chainalysis.com/api/v1/address/{address}', headers=headers)
 
     if not response.json()['identifications']:
         return {
