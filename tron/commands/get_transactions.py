@@ -3,7 +3,7 @@ from datetime import datetime
 from core.settings import APPROXIMATE_MAX_TRANSACTIONS_AMOUNT
 
 
-def get_transactions(address, api_key, params={}):
+async def get_transactions(address, api_key, params={}):
     url = f"https://api.trongrid.io/v1/accounts/{address}/transactions/trc20"
     
     headers = {
