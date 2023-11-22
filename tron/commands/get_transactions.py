@@ -1,4 +1,4 @@
-import requests
+import httpx
 from datetime import datetime
 from core.settings import APPROXIMATE_MAX_TRANSACTIONS_AMOUNT
 
@@ -11,7 +11,7 @@ async def get_transactions(address, api_key, params={}):
         'TRON-PRO-API-KEY': api_key
     }
 
-    response = requests.get(url, headers=headers, params=params)
+    response = httpx.get(url, headers=headers, params=params)
 
     data = []
 
@@ -32,7 +32,7 @@ async def get_transactions(address, api_key, params={}):
         if len(data) >= APPROXIMATE_MAX_TRANSACTIONS_AMOUNT:
              break
         else:
-            response = requests.get(url, headers=headers, params=params)
+            response = httpx.get(url, headers=headers, params=params)
             response_data = response.json()['data']
 
             format_transactions(response_data)

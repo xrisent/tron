@@ -1,4 +1,4 @@
-import requests
+import httpx
 
 TRC20_TOKEN = 'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t'
 
@@ -10,7 +10,7 @@ async def get_balance(address, api_key):
         'TRON-PRO-API-KEY': api_key
     }
 
-    response = requests.get(url, headers=headers)
+    response = httpx.get(url, headers=headers)
 
     data = response.json()['data']
     for trc20_dict in data[0]['trc20']:
