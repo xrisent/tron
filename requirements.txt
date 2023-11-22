@@ -22,7 +22,7 @@ djangorestframework==3.14.0
 drf-yasg==1.21.7
 ecdsa==0.18.0
 eth-abi==2.2.0
-eth-account==0.5.9
+eth-account==0.4.0
 eth-hash==0.5.2
 eth-keyfile==0.5.1
 eth-keys==0.2.4
