@@ -9,7 +9,6 @@ async def check_anomaly_transfers(transactions, difference_time, address):
     anomaly_list = []
 
     for transaction in transactions:
-        print('c')
         if transaction['from'] != address:
             from_list.append({
                 'transaction_id': transaction['transaction_id'],
