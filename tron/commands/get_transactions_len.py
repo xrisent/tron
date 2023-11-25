@@ -13,7 +13,9 @@ async def get_len(address, api_key):
 
     while True:
         response = httpx.get(url=url, headers=headers, params=params)
-        transactions_len += len(response.json()['data'])
+        for transaction in response.json()['data']:
+            if transaction['token_info']['symbol'] == 'USDT':
+                transactions_len += 1
         fingerprint = response.json()['meta'].get('fingerprint')
 
         if fingerprint:
