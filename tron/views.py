@@ -17,6 +17,7 @@ from .commands.get_transactions import get_transactions
 from .commands.get_account_balance import get_balance
 from .commands.get_transactions_len import get_len
 from .commands.get_first_last_transactions import get_first_last_transactions
+from .commands.check_account import get_account_info
 
 from asgiref.sync import async_to_sync
 
@@ -36,7 +37,7 @@ api_key_chainalysis = config('CHAINALYSIS_API_KEY')
     ],
     responses={
         '200': openapi.Response(
-            description='Successful response',
+            description='Успешная проверка',
             examples={'application/json': {"finalEvaluation": {
                 "finalEvaluation": 0.33,
                 "transactions": 125,
@@ -49,15 +50,15 @@ api_key_chainalysis = config('CHAINALYSIS_API_KEY')
             "message": 'null'}},
         ),
         '230': openapi.Response(
-            description='Transactions are less than 10',
-            examples={'application/json':{'finalEvaluation': None, 'error': None, 'message': 'On this address less than 10 transactions'}},
+            description='Транзакции меньше 10',
+            examples={'application/json':{'finalEvaluation': None, 'error': None, 'message': 'На этом адресе зарегестрировано меньше 10 транзакций'}},
         ),
         '231': openapi.Response(
-            description='Address is on sanctions list',
-            examples={'application/json':{'finalEvaluation': None, 'error': None, 'message': 'This address is on sanctions list'}},
+            description='Адрес находится в санкционном списке',
+            examples={'application/json':{'finalEvaluation': None, 'error': None, 'message': 'Этот адрес находится в санкционном списке'}},
         ),
         '400': openapi.Response(
-            description='Bad request',
+            description='Неправильный метод запроса',
             examples={'application/json':{'finalEvaluation': None, 'error': 'Bad Request', 'message': None}},
         ),
         '500': openapi.Response(
@@ -79,20 +80,21 @@ def start_research(request, address):
             transactions_len = await get_len(address=address, api_key=api_key)
             
             if transactions_len <= 10:
-                return JsonResponse({'finalEvaluation': None, 'error': None, 'message': 'On this address less than 10 transactions'}, status=230)
+                return JsonResponse({'finalEvaluation': None, 'error': None, 'message': 'На этом адресе зарегестрировано меньше 10 транзакций'}, status=230)
             
             transactions_info = await get_first_last_transactions(address=address, api_key=api_key)
             balance = int(await get_balance(address=address, api_key=api_key))/1000000
             anomaly_relation = await check_relation(address=address, api_key=api_key_chainalysis)
 
             if anomaly_relation['evaluation'] is True:
-                return JsonResponse({'finalEvaluation': None, 'error': None, 'message': 'This address is on sanctions list'}, status=231)
+                return JsonResponse({'finalEvaluation': None, 'error': None, 'message': 'Этот адрес находится в санкционном списке'}, status=231)
 
             anomaly_value = await check_anomaly_value(transactions=transactions, minimum_threshold=TRON_SETTINGS['minimum_threshold'], maximum_threshold=TRON_SETTINGS['maximum_threshold'])
             anomaly_transfers = await check_anomaly_transfers(transactions=transactions, difference_time=TRON_SETTINGS['time_difference'], address=address)
             anomaly_hiding = await check_anomaly_hiding(transactions=transactions, address=address, time_difference=TRON_SETTINGS['time_difference'], api_key=api_key)
+            redTag = await get_account_info(address=address)
 
-            finalEvaluation = get_finalEvaluation(anomaly_value, anomaly_transfers, anomaly_hiding, anomaly_relation, value_coefficient=TRON_SETTINGS['value_coefficient'], transfers_coefficient=TRON_SETTINGS['transfers_coefficient'], hiding_coefficient=TRON_SETTINGS['hiding_coefficient'], transactions_len=transactions_len, balance=balance, first_transaction = transactions_info['first_transaction'], last_transaction = transactions_info['last_transaction'])
+            finalEvaluation = get_finalEvaluation(anomaly_value, anomaly_transfers, anomaly_hiding, anomaly_relation, value_coefficient=TRON_SETTINGS['value_coefficient'], transfers_coefficient=TRON_SETTINGS['transfers_coefficient'], hiding_coefficient=TRON_SETTINGS['hiding_coefficient'], transactions_len=transactions_len, balance=balance, first_transaction = transactions_info['first_transaction'], last_transaction = transactions_info['last_transaction'], redTag=redTag)
             
             return JsonResponse({'finalEvaluation': finalEvaluation, 'error': None, 'message': None}, status=200)
 

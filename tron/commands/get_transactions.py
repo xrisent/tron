@@ -17,6 +17,7 @@ async def get_transactions(address, api_key, params={}):
 
     def format_transactions(response_data):
         for transaction in response_data:
+            if transaction['token_info']['symbol'] == 'USDT':
                 time = datetime.fromtimestamp(transaction['block_timestamp']/1000)
                 data.append({
                     'transaction_id': transaction['transaction_id'],
