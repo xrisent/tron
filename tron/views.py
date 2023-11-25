@@ -44,7 +44,8 @@ api_key_chainalysis = config('CHAINALYSIS_API_KEY')
                 "blacklist": 'false',
                 "balance": 530,
                 "first_transaction": "2020-12-12 19:13:18",
-                "last_transaction": "2023-11-05 11:21:06"
+                "last_transaction": "2023-11-05 11:21:06",
+                'redTag': 'Обычный'
                 },
             "error": 'null',
             "message": 'null'}},
@@ -62,7 +63,7 @@ api_key_chainalysis = config('CHAINALYSIS_API_KEY')
             examples={'application/json':{'finalEvaluation': None, 'error': 'Bad Request', 'message': None}},
         ),
         '500': openapi.Response(
-            description='Internal server error',
+            description='Внутренняя ошибка сервера',
             examples={'application/json': {'content': {'finalEvaluation': None, 'error': 'Internal server error', 'message': None}}},
         ),
     }
