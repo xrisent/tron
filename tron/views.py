@@ -2,11 +2,13 @@ from decouple import config
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.decorators import api_view, renderer_classes
 from rest_framework.renderers import JSONRenderer
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
-
 from django.views.generic import View
+import json
+from asgiref.sync import async_to_sync
+
 
 from .commands.check_anomaly_hiding import check_anomaly_hiding
 from .commands.check_anomaly_transfers import check_anomaly_transfers
@@ -19,7 +21,6 @@ from .commands.get_transactions_len import get_len
 from .commands.get_first_last_transactions import get_first_last_transactions
 from .commands.check_account import get_account_info
 
-from asgiref.sync import async_to_sync
 
 from core.settings import TRON_SETTINGS
 
@@ -95,9 +96,12 @@ def start_research(request, address):
             anomaly_hiding = await check_anomaly_hiding(transactions=transactions, address=address, time_difference=TRON_SETTINGS['time_difference'], api_key=api_key)
             redTag = await get_account_info(address=address)
 
-            finalEvaluation = get_finalEvaluation(anomaly_value, anomaly_transfers, anomaly_hiding, anomaly_relation, value_coefficient=TRON_SETTINGS['value_coefficient'], transfers_coefficient=TRON_SETTINGS['transfers_coefficient'], hiding_coefficient=TRON_SETTINGS['hiding_coefficient'], transactions_len=transactions_len, balance=balance, first_transaction = transactions_info['first_transaction'], last_transaction = transactions_info['last_transaction'], redTag=redTag)
-            
-            return JsonResponse({'finalEvaluation': finalEvaluation, 'error': None, 'message': None}, status=200)
+            finalEvaluation = get_finalEvaluation(anomaly_value, anomaly_transfers, anomaly_hiding, anomaly_relation, value_coefficient=TRON_SETTINGS['value_coefficient'], transfers_coefficient=TRON_SETTINGS['transfers_coefficient'], hiding_coefficient=TRON_SETTINGS['hiding_coefficient'], transactions_len=transactions_len, balance=balance, first_transaction=transactions_info['first_transaction'], last_transaction=transactions_info['last_transaction'], redTag=redTag)
+
+            response_data = {'finalEvaluation': finalEvaluation, 'error': None, 'message': None}
+            json_response = json.dumps(response_data, ensure_ascii=False)
+
+            return HttpResponse(json_response, content_type='application/json; charset=utf-8')
 
         response = inner()
         return response
