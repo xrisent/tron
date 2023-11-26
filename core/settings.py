@@ -150,10 +150,5 @@ TRON_SETTINGS = {
     'transfers_coefficient': 0.3,
     'value_coefficient': 0.4,
     'hiding_coefficient': 0.5,
-    'params': {
-        'limit': 20
-    }
 }
-
-APPROXIMATE_MAX_TRANSACTIONS_AMOUNT = 50
 

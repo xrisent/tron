@@ -26,6 +26,7 @@ from core.settings import TRON_SETTINGS
 
 api_key = config('API_TRONGRID_KEY')
 api_key_chainalysis = config('CHAINALYSIS_API_KEY')
+PARAMS = config('PARAMS')
 
 @swagger_auto_schema(
     methods=['get'],
@@ -77,7 +78,7 @@ def start_research(request, address):
 
         @async_to_sync
         async def inner():
-            transactions = await get_transactions(address=address, api_key=api_key, params=TRON_SETTINGS['params'])
+            transactions = await get_transactions(address=address, api_key=api_key, params=PARAMS)
             
             transactions_len = await get_len(address=address, api_key=api_key)
             

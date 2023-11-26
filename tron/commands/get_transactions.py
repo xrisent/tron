@@ -1,6 +1,7 @@
 import httpx
 from datetime import datetime
-from core.settings import APPROXIMATE_MAX_TRANSACTIONS_AMOUNT
+from decouple import config
+APPROXIMATE_MAX_TRANSACTIONS_AMOUNT = config('APPROXIMATE_MAX_TRANSACTIONS_AMOUNT')
 
 
 async def get_transactions(address, api_key, params={}):
