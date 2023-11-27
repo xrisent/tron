@@ -31,7 +31,7 @@ async def get_transactions(address, api_key, params={}):
     
 
     while True:
-        if len(data) >= APPROXIMATE_MAX_TRANSACTIONS_AMOUNT:
+        if len(data) >= int(APPROXIMATE_MAX_TRANSACTIONS_AMOUNT):
              break
         else:
             response = httpx.get(url, headers=headers, params=params)
