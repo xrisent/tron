@@ -78,7 +78,7 @@ def start_research(request, address):
 
         @async_to_sync
         async def inner():
-            transactions = await get_transactions(address=address, api_key=api_key, params=PARAMS)
+            transactions = await get_transactions(address=address, api_key=api_key, params={ "limit" : PARAMS })
             
             transactions_len = await get_len(address=address, api_key=api_key)
             
