@@ -16,10 +16,8 @@ from .commands.check_anomaly_value import check_anomaly_value
 from .commands.check_relation import check_relation
 from .commands.get_finalEvaluation import get_finalEvaluation
 from .commands.get_transactions import get_transactions
-from .commands.get_account_balance import get_balance
-from .commands.get_transactions_len import get_len
+from .commands.get_account_info import get_info
 from .commands.get_first_last_transactions import get_first_last_transactions
-from .commands.check_account import get_account_info
 
 
 from core.settings import TRON_SETTINGS
@@ -80,13 +78,15 @@ def start_research(request, address):
         async def inner():
             transactions = await get_transactions(address=address, api_key=api_key, params={ "limit" : PARAMS })
             
-            transactions_len = await get_len(address=address, api_key=api_key)
+            transactions_info = await get_info(address=address, api_key=api_key)
+            account_transactions = transactions_info['transactions_len']
+            account_balance = transactions_info['balance']
+            account_redTag = transactions_info['redTag']
             
-            if transactions_len <= 10:
+            if account_transactions <= 10:
                 return JsonResponse({'finalEvaluation': None, 'error': None, 'message': 'На этом адресе зарегестрировано меньше 10 транзакций'}, status=230)
             
             transactions_info = await get_first_last_transactions(address=address, api_key=api_key)
-            balance = int(await get_balance(address=address, api_key=api_key))/1000000
             anomaly_relation = await check_relation(address=address, api_key=api_key_chainalysis)
 
             if anomaly_relation['evaluation'] is True:
@@ -95,9 +95,8 @@ def start_research(request, address):
             anomaly_value = await check_anomaly_value(transactions=transactions, minimum_threshold=TRON_SETTINGS['minimum_threshold'], maximum_threshold=TRON_SETTINGS['maximum_threshold'])
             anomaly_transfers = await check_anomaly_transfers(transactions=transactions, difference_time=TRON_SETTINGS['time_difference'], address=address)
             anomaly_hiding = await check_anomaly_hiding(transactions=transactions, address=address, time_difference=TRON_SETTINGS['time_difference'], api_key=api_key)
-            redTag = await get_account_info(address=address)
 
-            finalEvaluation = get_finalEvaluation(anomaly_value, anomaly_transfers, anomaly_hiding, anomaly_relation, value_coefficient=TRON_SETTINGS['value_coefficient'], transfers_coefficient=TRON_SETTINGS['transfers_coefficient'], hiding_coefficient=TRON_SETTINGS['hiding_coefficient'], transactions_len=transactions_len, balance=balance, first_transaction=transactions_info['first_transaction'], last_transaction=transactions_info['last_transaction'], redTag=redTag)
+            finalEvaluation = get_finalEvaluation(anomaly_value, anomaly_transfers, anomaly_hiding, anomaly_relation, value_coefficient=TRON_SETTINGS['value_coefficient'], transfers_coefficient=TRON_SETTINGS['transfers_coefficient'], hiding_coefficient=TRON_SETTINGS['hiding_coefficient'], transactions_len=account_transactions, balance=account_balance, first_transaction=transactions_info['first_transaction'], last_transaction=transactions_info['last_transaction'], redTag=account_redTag)
 
             response_data = {'finalEvaluation': finalEvaluation, 'error': None, 'message': None}
             json_response = json.dumps(response_data, ensure_ascii=False)
