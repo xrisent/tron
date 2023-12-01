@@ -11,7 +11,9 @@ async def get_len(address, api_key):
     response = httpx.get(url, headers=headers)
 
     for k, v in response.json().items():
-        if k == 'totalTransactionCount':
-            return v
+        if k == 'withPriceTokens':
+            for dict in v:
+                if dict['tokenId'] == 'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t':
+                    return dict['transferCount']
 
 
