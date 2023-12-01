@@ -26,7 +26,7 @@ from core.settings import TRON_SETTINGS
 
 api_key = config('API_TRONGRID_KEY')
 api_key_chainalysis = config('CHAINALYSIS_API_KEY')
-PARAMS = json.loads(config('PARAMS'))
+PARAMS = int(config('PARAMS'))
 
 @swagger_auto_schema(
     methods=['get'],
