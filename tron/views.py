@@ -84,13 +84,17 @@ def start_research(request, address):
             account_redTag = transactions_info['redTag']
             
             if account_transactions <= 10:
-                return JsonResponse({'finalEvaluation': None, 'error': None, 'message': 'На этом адресе зарегестрировано меньше 10 транзакций'}, status=230)
+                response_data = {'finalEvaluation': None, 'error': None, 'message': 'На этом адресе зарегестрировано меньше 10 транзакций'}
+                json_response = json.dumps(response_data, ensure_ascii=False)
+                return HttpResponse(json_response, content_type='application/json; charset=utf-8', status=230)
             
             transactions_info = await get_first_last_transactions(address=address, api_key=api_key)
             anomaly_relation = await check_relation(address=address, api_key=api_key_chainalysis)
 
             if anomaly_relation['evaluation'] is True:
-                return JsonResponse({'finalEvaluation': None, 'error': None, 'message': 'Этот адрес находится в санкционном списке'}, status=231)
+                response_data = {'finalEvaluation': None, 'error': None, 'message': 'Этот адрес находится в санкционном списке'}
+                json_response = json.dumps(response_data, ensure_ascii=False)
+                return HttpResponse(json_response, content_type='application/json; charset=utf-8', status=231)
 
             anomaly_value = await check_anomaly_value(transactions=transactions, minimum_threshold=TRON_SETTINGS['minimum_threshold'], maximum_threshold=TRON_SETTINGS['maximum_threshold'])
             anomaly_transfers = await check_anomaly_transfers(transactions=transactions, difference_time=TRON_SETTINGS['time_difference'], address=address)
@@ -101,10 +105,12 @@ def start_research(request, address):
             response_data = {'finalEvaluation': finalEvaluation, 'error': None, 'message': None}
             json_response = json.dumps(response_data, ensure_ascii=False)
 
-            return HttpResponse(json_response, content_type='application/json; charset=utf-8')
+            return HttpResponse(json_response, content_type='application/json; charset=utf-8', status=200)
 
         response = inner()
         return response
             
     except Exception as e:
-        return JsonResponse({'finalEvaluation': None, 'error': e, 'message': None}, status=500)
+        response_data = {'finalEvaluation': None, 'error': e, 'message': None}
+        json_response = json.dumps(response_data, ensure_ascii=False)
+        return HttpResponse(json_response, content_type='application/json; charset=utf-8', status=500)
